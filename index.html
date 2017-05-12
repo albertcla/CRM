@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="CRM">
+
+  <head>
+   
+    <meta charset="UTF-8">
+    <title>CRM curso Desarrollo WEB EOI</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="font/font-awesome-4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+    <script type="text/javascript" src="js/factories/id.factories.js"></script>
+    <script type="text/javascript" src="js/factories/users.factories.js"></script>
+    <script type="text/javascript" src="js/controller/main.js"></script>
+    
+  </head>
+
+  <body ng-controller="crmController">
+
+    <nav>
+      <div class="wrapper">
+        <span>CRM Pro</span>
+        <div>
+          <div>BUSCAR: <input type="text" ng-model="search.name"></div>
+          <select name="searchStudies" ng-model="search.studies">
+            <option value="">-- Filtra por nivel de estudios --</option>
+            <option ng-repeat="study in studies" value="{{study}}">{{study}}</option>
+          </select>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <div class="perfil" ng-repeat="user in users | filter:search track by user.id">
+        <p><b>ID: <i>{{user.id}}</i></b></p>
+        <div class="pers">
+          <img src="{{user.photo}}" alt="Foto_perfil">
+          <div class="info">
+            <h2>{{user.name}}</h2>
+            <p><b>Age: </b>{{user.age}}</p>
+            <p><b>{{user.studies}}</b></p>
+          </div>
+        </div>
+        <div class="contact-info">
+          <p><b>Tlf: </b>{{user.phone}}</p>
+          <p><b>eMail: </b>{{user.email}}</p>
+        </div>
+        <p><b>Descripción: </b>{{user.description}}</p>
+        <p><b>Otros: </b>{{user.other}}</p>
+        <div class="icons">
+          <a href="#" ng-click="editUser(user)"><i class="fa fa-pencil"></i></a>
+          <a href="#" ng-click="deleteUser(user)"><i class="fa fa-trash-o"></i></a>
+        </div>
+      </div>
+    </main>
+
+    <aside>
+     
+      <form name="userForm" novalidate>
+       
+        <div>
+          <label>Nombre completo: *</label>
+          <input name="name" type="text" ng-model="newUser.name" ng-required="true">
+          <span class="pass"><i class="fa fa-check-circle" ng-if="userForm.name.$valid"></i></span>
+          <span class="fail error-msg"><i class="fa fa-exclamation-circle" ng-if="userForm.name.$touched && userForm.name.$invalid"></i></span>
+          <p class="error-msg" ng-show="userForm.name.$touched && userForm.name.$invalid">No podemos registrarte si no introduces tu Nombre.</p>
+        </div>
+
+        <div>
+          <label>Edad: *</label>
+          <input name="age" type="number" min="0" max="120" ng-model="newUser.age" ng-required="true" ng-min="18" ng-maxlength="3" ng-model-options="{allowInvalid: true}">
+          <span class="pass"><i class="fa fa-check-circle" ng-if="userForm.age.$valid"></i></span>
+          <span class="fail error-msg"><i class="fa fa-exclamation-circle" ng-if="userForm.age.$touched && userForm.age.$invalid"></i></span>
+          <p class="error-msg" ng-show="userForm.age.$touched && userForm.age.$invalid && (newUser.age > 18 || newUser.age == null)">Debes introducir tu edad.</p>
+          <p class="error-msg" ng-show="userForm.age.$touched && userForm.age.$invalid && newUser.age >= 0 && newUser.age < 18 && newUser.age != null">Los usuarios registrados deben ser mayores de 18 años.</p>
+        </div>
+
+        <div>
+          <label>URL foto: *</label>
+          <input name="photo" type="url" ng-model="newUser.photo" ng-required="true">
+          <span class="pass"><i class="fa fa-check-circle" ng-if="userForm.photo.$valid"></i></span>
+          <span class="fail"><i class="fa fa-exclamation-circle" ng-if="userForm.photo.$touched && userForm.photo.$invalid"></i></span>
+          <p class="error-msg" ng-show="userForm.photo.$touched && userForm.photo.$invalid">La URL de la foto introducida no es correcta</p>
+        </div>
+
+        <div>
+          <label>Teléfono: *</label>
+          <input name="phone" type="tel" ng-model="newUser.phone" ng-required="true" ng-minlength="9" ng-pattern="/^[6|7|8|9][0-9]{8}$/">
+          <span class="pass"><i class="fa fa-check-circle" ng-if="userForm.phone.$valid"></i></span>
+          <span class="fail"><i class="fa fa-exclamation-circle" ng-if="userForm.phone.$touched && userForm.phone.$invalid"></i></span>
+          <p class="error-msg" ng-show="userForm.phone.$touched && userForm.phone.$invalid">El número de teléfono debe tener al menos 9 dígitos.</p>
+        </div>
+
+        <div>
+          <label>eMail: *</label>
+          <input name="email" type="email" ng-model="newUser.email" ng-required="true" ng-minlength="8" ng-pattern="^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$">
+          <span class="pass"><i class="fa fa-check-circle" ng-if="userForm.email.$valid"></i></span>
+          <span class="fail"><i class="fa fa-exclamation-circle" ng-if="userForm.email.$touched && userForm.email.$invalid"></i></span>
+          <p class="error-msg" ng-show="userForm.email.$touched && userForm.email.$invalid">El correo electrónico introducido no es correcto.</p>
+        </div>
+
+        <div>
+          <label>Descripción: </label>
+          <textarea name="description" ng-model="newUser.description"></textarea>
+        </div>
+
+        <div>
+          <label>Otros: </label>
+          <input name="other" type="text" ng-model="newUser.other">
+        </div>
+
+        <div> 
+          <label>Nivel de estudios:</label>
+          <select name="studies" ng-model="newUser.studies">
+            <option value="">-- Selecciona nivel de estudios --</option>
+            <option ng-repeat="study in studies" value="{{study}}">{{study}}</option>
+          </select>
+        </div>
+
+        <button ng-click="cancelUser()" class="danger">Cancelar</button>
+        <button ng-if="!editing" ng-click="addUser(newUser)" ng-disabled="userForm.$invalid" class="success">Crear</button>
+        <button ng-if="editing" ng-click="saveUser(newUser)" class="success">Modificar</button>
+        
+      </form>
+      
+    </aside>
+
+  </body>
+
+</html>
